@@ -26,7 +26,7 @@ const controls = new OrbitControls(camera, renderer.domElement)
 controls.screenSpacePanning = true //so that panning up and down doesn't zoom in/out
 //controls.addEventListener('change', render)
 
-const planeGeometry = new THREE.PlaneGeometry(3.6, 1.8) //, 360, 180)
+const planeGeometry = new THREE.PlaneGeometry(3.6, 1.8, 1440, 720)
 
 const material = new THREE.MeshPhongMaterial()
 
@@ -70,7 +70,7 @@ const options = {
 const gui = new GUI()
 
 const materialFolder = gui.addFolder('THREE.Material')
-materialFolder.add(material, 'transparent').onChange(() => material.needsUpdate = true)
+materialFolder.add(material, 'transparent')
 materialFolder.add(material, 'opacity', 0, 1, 0.01)
 materialFolder.add(material, 'depthTest')
 materialFolder.add(material, 'depthWrite')
@@ -123,23 +123,39 @@ function updateMaterial() {
 const planeData = {
     width: 3.6,
     height: 1.8,
-    widthSegments: 1,
-    heightSegments: 1
-};
-const planePropertiesFolder = gui.addFolder("PlaneGeometry")
+    widthSegments: 360,
+    heightSegments: 180,
+}
+
+const planePropertiesFolder = gui.addFolder('PlaneGeometry')
 //planePropertiesFolder.add(planeData, 'width', 1, 30).onChange(regeneratePlaneGeometry)
 //planePropertiesFolder.add(planeData, 'height', 1, 30).onChange(regeneratePlaneGeometry)
-planePropertiesFolder.add(planeData, 'widthSegments', 1, 360).onChange(regeneratePlaneGeometry)
-planePropertiesFolder.add(planeData, 'heightSegments', 1, 180).onChange(regeneratePlaneGeometry)
+planePropertiesFolder
+    .add(planeData, 'widthSegments', 1, 360)
+    .onChange(regeneratePlaneGeometry)
+planePropertiesFolder
+    .add(planeData, 'heightSegments', 1, 180)
+    .onChange(regeneratePlaneGeometry)
 planePropertiesFolder.open()
 
 function regeneratePlaneGeometry() {
-    let newGeometry = new THREE.PlaneGeometry(
-        planeData.width, planeData.height, planeData.widthSegments, planeData.heightSegments
+    const newGeometry = new THREE.PlaneGeometry(
+        planeData.width,
+        planeData.height,
+        planeData.widthSegments,
+        planeData.heightSegments
     )
     plane.geometry.dispose()
     plane.geometry = newGeometry
 }
+
+const textureFolder = gui.addFolder("Texture")
+textureFolder.add(texture.repeat, 'x', 0.1, 1, 0.1)
+textureFolder.add(texture.repeat, 'y', 0.1, 1, 0.1)
+textureFolder.add(texture.center, 'x', 0, 1, 0.001)
+textureFolder.add(texture.center, 'y', 0, 1, 0.001)
+
+textureFolder.open()
 
 function animate() {
     requestAnimationFrame(animate)
